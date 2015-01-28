@@ -255,8 +255,6 @@ vsprintf_a(const char *f, va_list args)
     char buf[64];
     char *string;
     va_list args_copy;
-    va_start(args_copy, f);
-
     va_copy(args_copy, args);
     n = vsnprintf(buf, 64, f, args_copy);
     va_end(args_copy);

@@ -12,8 +12,14 @@ DISK_CACHE_ROOT = $(PREFIX)/cache
 
 # To compile with GCC:
 
-# CC = gcc
+
+CC = gcc
 CDEBUGFLAGS = -Os -g -Wall -fno-strict-aliasing
+
+ifeq ($(ARCH),armv7)
+	CC = arm-linux-gcc
+	CDEBUGFLAGS = -static -march=armv7-a -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -Os -g -Wall -fno-strict-aliasing
+endif
 
 # To compile on a pure POSIX system:
 
