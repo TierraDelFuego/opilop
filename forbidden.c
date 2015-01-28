@@ -314,8 +314,8 @@ initForbidden(void)
     }
 
     if(forbiddenFile == NULL) {
-        if(access("/etc/polipo/forbidden", F_OK) >= 0)
-            forbiddenFile = internAtom("/etc/polipo/forbidden");
+        if(access("/p/polipo/etc/forbidden", F_OK) >= 0)
+            forbiddenFile = internAtom("/p/polipo/etc/forbidden");
     }
 
     parseDomainFile(forbiddenFile, &forbiddenDomains, &forbiddenRegex);
@@ -335,8 +335,8 @@ initForbidden(void)
     }
 
     if(uncachableFile == NULL) {
-        if(access("/etc/polipo/uncachable", F_OK) >= 0)
-            uncachableFile = internAtom("/etc/polipo/uncachable");
+        if(access("/p/polipo/etc/uncachable", F_OK) >= 0)
+            uncachableFile = internAtom("/p/polipo/etc/uncachable");
     }
 
     parseDomainFile(uncachableFile, &uncachableDomains, &uncachableRegex);
@@ -355,8 +355,8 @@ initForbidden(void)
     }
     
     if(forbiddenTunnelsFile == NULL) {
-        if(access("/etc/polipo/forbiddenTunnels", F_OK) >= 0)
-            forbiddenTunnelsFile = internAtom("/etc/polipo/forbiddenTunnels");
+        if(access("/p/polipo/etc/forbiddenTunnels", F_OK) >= 0)
+            forbiddenTunnelsFile = internAtom("/p/polipo/etc/forbiddenTunnels");
     }
     
     parseDomainFile(forbiddenTunnelsFile, &forbiddenTunnelsDomains, &forbiddenTunnelsRegex);

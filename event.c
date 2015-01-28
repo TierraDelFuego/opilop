@@ -732,17 +732,6 @@ initCondition(ConditionPtr condition)
     condition->handlers = NULL;
 }
 
-ConditionPtr
-makeCondition(void)
-{
-    ConditionPtr condition;
-    condition = malloc(sizeof(ConditionRec));
-    if(condition == NULL)
-        return NULL;
-    initCondition(condition);
-    return condition;
-}
-
 ConditionHandlerPtr
 conditionWait(ConditionPtr condition,
               int (*handler)(int, ConditionHandlerPtr),

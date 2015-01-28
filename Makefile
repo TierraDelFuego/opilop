@@ -1,9 +1,10 @@
-PREFIX = /usr/local
+PREFIX = /p/polipo
 BINDIR = $(PREFIX)/bin
 MANDIR = $(PREFIX)/man
 INFODIR = $(PREFIX)/info
-LOCAL_ROOT = /usr/share/polipo/www
-DISK_CACHE_ROOT = /var/cache/polipo
+CONFDIR = $(PREFIX)/etc
+LOCAL_ROOT = $(PREFIX)/www
+DISK_CACHE_ROOT = $(PREFIX)/cache
 
 # To compile with Unix CC:
 
@@ -38,7 +39,7 @@ CDEBUGFLAGS = -Os -g -Wall -fno-strict-aliasing
 # EXE=.exe
 # LDLIBS = -lws2_32
 
-FILE_DEFINES = -DLOCAL_ROOT=\"$(LOCAL_ROOT)/\" \
+FILE_DEFINES = -DNO_SYSLOG -DNO_IPv6 -DLOCAL_ROOT=\"$(LOCAL_ROOT)/\" \
                -DDISK_CACHE_ROOT=\"$(DISK_CACHE_ROOT)/\"
 
 # You may optionally also add any of the following to DEFINES:
@@ -86,27 +87,34 @@ all: polipo$(EXE) polipo.info html/index.html localindex.html
 install: install.binary install.man
 
 install.binary: all
-	mkdir -p $(TARGET)$(BINDIR)
-	mkdir -p $(TARGET)$(LOCAL_ROOT)
-	mkdir -p $(TARGET)$(LOCAL_ROOT)/doc
-	rm -f $(TARGET)$(BINDIR)/polipo
-	cp -f polipo $(TARGET)$(BINDIR)/
-	cp -f html/* $(TARGET)$(LOCAL_ROOT)/doc
-	cp -f localindex.html $(TARGET)$(LOCAL_ROOT)/index.html
+	mkdir -pv $(BINDIR)
+	mkdir -pv $(LOCAL_ROOT)
+	mkdir -pv $(CONFDIR)
+	mkdir -pv $(LOCAL_ROOT)/doc
+	mkdir -pv $(DISK_CACHE_ROOT)
+	rm -f $(BINDIR)/polipo
+	cp -fv config.sample $(CONFDIR)
+	cp -fv polipo $(BINDIR)/
+	cp -fv html/* $(LOCAL_ROOT)/doc
+	cp -fv localindex.html $(LOCAL_ROOT)/index.html
 
 install.man: all
-	mkdir -p $(TARGET)$(MANDIR)/man1
-	mkdir -p $(TARGET)$(INFODIR)
-	cp -f polipo.man $(TARGET)$(MANDIR)/man1/polipo.1
-	cp polipo.info $(TARGET)$(INFODIR)/
-	install-info --info-dir=$(TARGET)$(INFODIR) polipo.info
+	mkdir -pv $(MANDIR)/man1
+	mkdir -pv $(INFODIR)
+	cp -fv polipo.man $(MANDIR)/man1/polipo.1
+	cp -fv polipo.info $(INFODIR)/
+	install-info --info-dir=$(INFODIR) polipo.info
 
+uninstall: uninstall.all
+
+uninstall.all: all
+	rm -fv $(BINDIR)/polipo
 
 polipo.info: polipo.texi
 	makeinfo polipo.texi
 
 html/index.html: polipo.texi
-	mkdir -p html
+	mkdir -pv html
 	makeinfo --html -o html polipo.texi
 
 polipo.html: polipo.texi
@@ -133,10 +141,10 @@ TAGS: $(SRCS)
 .PHONY: clean
 
 clean:
-	-rm -f polipo$(EXE) *.o *~ core TAGS gmon.out
-	-rm -f polipo.cp polipo.fn polipo.log polipo.vr
-	-rm -f polipo.cps polipo.info* polipo.pg polipo.toc polipo.vrs
-	-rm -f polipo.aux polipo.dvi polipo.ky polipo.ps polipo.tp
-	-rm -f polipo.dvi polipo.ps polipo.ps.gz polipo.pdf polipo.html
-	-rm -rf ./html/
-	-rm -f polipo.man.html
+	-rm -fv polipo$(EXE) *.o *~ core TAGS gmon.out
+	-rm -fv polipo.cp polipo.fn polipo.log polipo.vr
+	-rm -fv polipo.cps polipo.info* polipo.pg polipo.toc polipo.vrs
+	-rm -fv polipo.aux polipo.dvi polipo.ky polipo.ps polipo.tp
+	-rm -fv polipo.dvi polipo.ps polipo.ps.gz polipo.pdf polipo.html
+	-rm -rfv ./html/
+	-rm -fv polipo.man.html

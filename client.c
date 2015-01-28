@@ -524,18 +524,6 @@ httpClientError(HTTPRequestPtr request, int code, AtomPtr message)
     return 1;
 }
 
-/* This may be called from object handlers. */
-int
-httpClientLeanError(HTTPRequestPtr request, int code, AtomPtr message)
-{
-    if(request->error_message)
-        releaseAtom(request->error_message);
-    request->error_code = code;
-    request->error_message = message;
-    return 1;
-}
-
-
 int
 httpClientNewError(HTTPConnectionPtr connection, int method, int persist,
                    int code, AtomPtr message)
@@ -675,32 +663,6 @@ httpClientHandlerHeaders(FdEventHandlerPtr event, StreamRequestPtr srequest,
     httpClientNewError(connection, METHOD_UNKNOWN, 0, code, message);
     return 1;
 
-}
-
-static int
-httpClientRequestDelayed(TimeEventHandlerPtr event)
-{
-    HTTPRequestPtr request = *(HTTPRequestPtr*)event->data;
-    AtomPtr url;
-    url = internAtomN(request->object->key, request->object->key_size);
-    if(url == NULL) {
-        do_log(L_ERROR, "Couldn't allocate url.\n");
-        abortObject(request->object, 503, internAtom("Couldn't allocate url"));
-        return 1;
-    }
-    httpClientRequest(request, url);
-    return 1;
-}
-
-int
-delayedHttpClientRequest(HTTPRequestPtr request)
-{
-    TimeEventHandlerPtr event;
-    event = scheduleTimeEvent(-1, httpClientRequestDelayed,
-                              sizeof(request), &request);
-    if(!event)
-        return -1;
-    return 1;
 }
 
 int

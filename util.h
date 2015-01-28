@@ -69,7 +69,7 @@ int snnprintf(char *restrict buf, int n, int len, const char *format, ...)
 int snnvprintf(char *restrict buf, int n, int len, const char *format, va_list args)
      ATTRIBUTE ((format (printf, 4, 0)));
 int snnprint_n(char *restrict buf, int n, int len, const char *s, int slen);
-int strcmp_n(const char *string, const char *buf, int n) ATTRIBUTE ((pure));
+
 int digit(char) ATTRIBUTE ((const));
 int letter(char) ATTRIBUTE ((const));
 char lwr(char) ATTRIBUTE ((const));
@@ -84,7 +84,7 @@ void *memrchr(const void *s, int c, size_t n) ATTRIBUTE ((pure));
 #endif
 int h2i(char h) ATTRIBUTE ((const));
 char i2h(int i) ATTRIBUTE ((const));
-int log2_floor(int x) ATTRIBUTE ((const));
+
 int log2_ceil(int x) ATTRIBUTE ((const));
 char* vsprintf_a(const char *f, va_list args)
     ATTRIBUTE ((malloc, format (printf, 1, 0)));

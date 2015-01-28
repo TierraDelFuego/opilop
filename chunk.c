@@ -171,12 +171,6 @@ dispose_chunk(void *chunk)
     used_chunks--;
 }
 
-void
-free_chunks()
-{
-    return;
-}
-
 int
 totalChunkArenaSize()
 {

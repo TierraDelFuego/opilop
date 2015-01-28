@@ -106,7 +106,7 @@ void
 initLog(void)
 {
     if(daemonise && logFile == NULL && !logSyslog)
-        logFile = internAtom("/var/log/polipo");
+        logFile = internAtom("/p/polipo/log/polipo");
 
     if(logFile != NULL && logFile->length > 0) {
         FILE *f;

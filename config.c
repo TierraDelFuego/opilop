@@ -575,7 +575,7 @@ parseAtom(char *buf, int offset, AtomPtr *value_return, int insensitive)
         k = 0;
         j = y0;
         while(j < i) {
-            if(buf[j] == '\\' && j <= i - 2) {
+            if(j <= i - 2 && buf[j] == '\\') {
                 s[k++] = buf[j + 1];
                 j += 2;
             } else

@@ -107,8 +107,8 @@ main(int argc, char **argv)
     }
 
     if(configFile == NULL) {
-        if(access("/etc/polipo/config", F_OK) >= 0)
-            configFile = internAtom("/etc/polipo/config");
+        if(access("/p/polipo/etc/config", F_OK) >= 0)
+            configFile = internAtom("/p/polipo/etc/config");
         if(configFile && access(configFile->string, F_OK) < 0) {
             releaseAtom(configFile);
             configFile = NULL;

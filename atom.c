@@ -244,9 +244,9 @@ internAtomErrorV(int e, const char *f, va_list args)
     AtomPtr atom;
     char *s1, *s2;
     int n, rc;
-    va_list args_copy;
 
     if(f) {
+        va_list args_copy;
         va_copy(args_copy, args);
         s1 = vsprintf_a(f, args_copy);
         va_end(args_copy);

@@ -50,10 +50,10 @@ int
 snnvprintf(char *restrict buf, int n, int len, const char *format, va_list args)
 {
     int rc = -1;
-    va_list args_copy;
 
     if(n < 0) return -2;
     if(n < len) {
+        va_list args_copy;
         va_copy(args_copy, args);
         rc = vsnprintf(buf + n, len - n, format, args_copy);
         va_end(args_copy);
@@ -73,26 +73,6 @@ snnprint_n(char *restrict buf, int n, int len, const char *s, int slen)
         buf[n++] = s[i++];
     if(n < len)
         return n;
-    else
-        return -1;
-}
-
-int
-strcmp_n(const char *string, const char *buf, int n)
-{
-    int i;
-    i = 0;
-    while(string[i] != '\0' && i < n) {
-        if(string[i] < buf[i])
-            return -1;
-        else if(string[i] > buf[i])
-            return 1;
-        i++;
-    }
-    if(string[i] == '\0' || i == n)
-        return 0;
-    else if(i == n)
-        return 1;
     else
         return -1;
 }
@@ -233,23 +213,6 @@ i2h(int i)
         return i - 10 + 'A';
 }
 
-/* floor(log2(x)) */
-int
-log2_floor(int x) 
-{
-    int i, j;
-
-    assert(x > 0);
-
-    i = 0;
-    j = 1;
-    while(2 * j <= x) {
-        i++;
-        j *= 2;
-    }
-    return i;
-}
-
 /* ceil(log2(x)) */
 int
 log2_ceil(int x) 
@@ -274,7 +237,6 @@ vsprintf_a(const char *f, va_list args)
     char *r;
     int rc;
     va_list args_copy;
-
     va_copy(args_copy, args);
     rc = vasprintf(&r, f, args_copy);
     va_end(args_copy);
@@ -293,6 +255,7 @@ vsprintf_a(const char *f, va_list args)
     char buf[64];
     char *string;
     va_list args_copy;
+    va_start(args_copy, f);
 
     va_copy(args_copy, args);
     n = vsnprintf(buf, 64, f, args_copy);

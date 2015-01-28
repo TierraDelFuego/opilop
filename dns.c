@@ -1402,7 +1402,9 @@ stringToLabels(char *buf, int offset, int n, char *string)
 static int
 labelsToString(char *buf, int offset, int n, char *d, int m, int *j_return)
 {
-    int i = offset, j, k;
+    int i = offset;
+    int j;
+    int k = 0;
     int ll, rc;
 
     j = 0;
@@ -1483,7 +1485,8 @@ dnsDecodeReply(char *buf, int offset, int n, int *id_return,
                AtomPtr *name_return, AtomPtr *value_return,
                int *af_return, unsigned *ttl_return)
 {
-    int i = offset, j, m;
+    int i = offset, j;
+    int m = 0;
     int id = -1, b23, qdcount, ancount, nscount, arcount, rdlength;
     int class, type;
     unsigned int ttl;
