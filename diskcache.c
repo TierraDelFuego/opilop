@@ -153,10 +153,10 @@ checkRoot(AtomPtr root)
 static AtomPtr
 maybeAddSlash(AtomPtr atom)
 {
-    AtomPtr newAtom = NULL;
+    /* AtomPtr newAtom = NULL; */
     if(!atom) return NULL;
     if(atom->length > 0 && atom->string[atom->length - 1] != '/') {
-        newAtom = atomCat(atom, "/");
+        AtomPtr newAtom = atomCat(atom, "/");
         releaseAtom(atom);
         return newAtom;
     }
@@ -293,7 +293,7 @@ entrySeek(DiskCacheEntryPtr entry, off_t offset)
 int
 localFilename(char *buf, int n, char *key, int len)
 {
-    int i, j;
+    int j;
     if(len <= 0 || key[0] != '/') return -1;
 
     if(urlIsSpecial(key, len)) return -1;
@@ -304,7 +304,7 @@ localFilename(char *buf, int n, char *key, int len)
     if(n <= localDocumentRoot->length)
         return -1;
 
-    i = 0;
+    int i = 0;
     if(key[i] != '/')
         return -1;
 
@@ -464,7 +464,6 @@ createFile(const char *name, int path_start)
     int fd;
     char buf[1024];
     int n;
-    int rc;
 
     if(name[path_start] == '/')
         path_start++;
@@ -491,6 +490,7 @@ createFile(const char *name, int path_start)
             break;
         memcpy(buf, name, n + 1);
         buf[n + 1] = '\0';
+        int rc;
         rc = mkdir(buf, diskCacheDirectoryPermissions);
         if(rc < 0 && errno != EEXIST) {
             do_log_error(L_ERROR, errno, "Couldn't create directory %s", buf);
@@ -1143,7 +1143,6 @@ makeDiskEntry(ObjectPtr object, int create)
     char *name = NULL;
     off_t offset = -1;
     int body_offset = -1;
-    int rc;
     int local = (object->flags & OBJECT_LOCAL) != 0;
     int dirty = 0;
 
@@ -1202,6 +1201,7 @@ makeDiskEntry(ObjectPtr object, int create)
         if(!negative)
             fd = open(buf, O_RDWR | O_BINARY);
         if(fd >= 0) {
+            int rc;
             rc = validateEntry(object, fd, &body_offset, &offset);
             if(rc >= 0) {
                 dirty = rc;
@@ -1231,6 +1231,7 @@ makeDiskEntry(ObjectPtr object, int create)
                     data = object->chunks[0].data;
                     dsize = object->chunks[0].size;
                 }
+                int rc;
                 rc = writeHeaders(fd, &body_offset, object, data, dsize);
                 if(rc < 0) {
                     do_log_error(L_ERROR, errno, "Couldn't write headers");
@@ -2045,12 +2046,12 @@ DiskObjectPtr
 insertDirs(DiskObjectPtr from)
 {
     DiskObjectPtr p, q, new;
-    int n, m;
+    int m;
     char *cp;
 
     p = NULL; q = from;
     while(q) {
-        n = strlen(q->location);
+        int n = strlen(q->location);
         if(n > 0 && q->location[n - 1] != '/') {
             cp = strrchr(q->location, '/');
             m = cp - q->location + 1;
@@ -2106,7 +2107,7 @@ indexDiskObjects(FILE *out, const char *root, int recursive)
             recursive ? "Recursive index" : "Index", of, root,
             recursive ? "Recursive index" : "Index", of, root);
 
-    if(diskCacheRoot == NULL || diskCacheRoot->length <= 0) {
+    if(diskCacheRoot == NULL || diskCacheRoot->length == 0) {
         fprintf(out, "<p>No <tt>diskCacheRoot</tt>.</p>\n");
         goto trailer;
     }
@@ -2283,7 +2284,7 @@ static int
 copyFile(int from, char *filename, int n)
 {
     char *buf;
-    int to, offset, nread, nzeroes, rc;
+    int to, offset, rc;
 
     buf = malloc(CHUNK_SIZE);
     if(buf == NULL)
@@ -2298,6 +2299,7 @@ copyFile(int from, char *filename, int n)
 
     offset = 0;
     while(offset < n) {
+        int nread, nzeroes;
         nread = read(from, buf, MIN(CHUNK_SIZE, n - offset));
         if(nread <= 0)
             break;
@@ -2424,16 +2426,14 @@ expireFile(char *filename, struct stat *sb,
 void
 expireDiskObjects()
 {
-    int rc;
     char *fts_argv[2];
     FTS *fts;
-    FTSENT *fe;
     int files = 0, considered = 0, unlinked = 0, truncated = 0;
     int dirs = 0, rmdirs = 0;
     long left = 0, total = 0;
 
     if(diskCacheRoot == NULL || 
-       diskCacheRoot->length <= 0 || diskCacheRoot->string[0] != '/')
+       diskCacheRoot->length == 0 || diskCacheRoot->string[0] != '/')
         return;
 
     fts_argv[0] = diskCacheRoot->string;
@@ -2444,7 +2444,7 @@ expireDiskObjects()
     } else {
         while(1) {
             gettimeofday(&current_time, NULL);
-
+            FTSENT *fe;
             fe = fts_read(fts);
             if(!fe) break;
 
@@ -2457,7 +2457,7 @@ expireDiskObjects()
                    strlen(fe->fts_accpath) <= diskCacheRoot->length)
                     continue;
                 dirs++;
-                rc = rmdir(fe->fts_accpath);
+                int rc = rmdir(fe->fts_accpath);
                 if(rc >= 0)
                     rmdirs++;
                 else if(errno != ENOTEMPTY && errno != EEXIST)

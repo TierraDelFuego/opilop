@@ -213,7 +213,6 @@ releaseAtom(AtomPtr atom)
 AtomPtr
 internAtomF(const char *format, ...)
 {
-    char *s;
     char buf[150];
     int n;
     va_list args;
@@ -225,6 +224,7 @@ internAtomF(const char *format, ...)
     if(n >= 0 && n < 150) {
         atom = internAtomN(buf, n);
     } else {
+        char *s;
         va_start(args, format);
         s = vsprintf_a(format, args);
         va_end(args);
@@ -326,8 +326,8 @@ makeAtomList(AtomPtr *atoms, int n)
 void
 destroyAtomList(AtomListPtr list)
 {
-    int i;
     if(list->list) {
+        int i;
         for(i = 0; i < list->length; i++)
             releaseAtom(list->list[i]);
         list->length = 0;

@@ -153,7 +153,6 @@ main(int argc, char **argv)
         do_daemonise(loggingToStderr());
 
     if(pidFile)
-        pidFile = expandTilde(pidFile);
         writePid(pidFile->string);
 
     listener = create_listener(proxyAddress->string, 
