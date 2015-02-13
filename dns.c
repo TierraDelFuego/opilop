@@ -111,8 +111,7 @@ parseResolvConf(char *filename)
 {
     FILE *f;
     char buf[512];
-    char *p, *q;
-    int n;
+    char *q;
     AtomPtr nameserver = NULL;
 
     f = fopen(filename, "r");
@@ -122,6 +121,8 @@ parseResolvConf(char *filename)
     }
 
     while(1) {
+        char *p;
+        int n;
         p = fgets(buf, 512, f);
         if(p == NULL)
             break;
@@ -448,26 +449,26 @@ dnsDelayedNotify(int error, GethostbynameRequestPtr request)
 AtomPtr
 rfc2732(AtomPtr name)
 {
-    char buf[40]; /* 8*4 (hexdigits) + 7 (colons) + 1 ('\0') */
-    int rc;
     AtomPtr a = NULL;
 
     if(name->length < 40+2 && 
        name->string[0] == '[' && name->string[name->length - 1] == ']') {
-        struct in6_addr in6a;
-        memcpy(buf, name->string + 1, name->length - 2);
-        buf[name->length - 2] = '\0';
-        rc = inet_pton(AF_INET6, buf, &in6a);
-        if(rc == 1) {
-            char s[1 + sizeof(HostAddressRec)];
-            memset(s, 0, sizeof(s));
-            s[0] = DNS_A;
-            s[1] = 6;
-            memcpy(s + 2, &in6a, 16);
-            a = internAtomN(s, 1 + sizeof(HostAddressRec));
-            if(a == NULL)
-                return NULL;
-        }
+           char buf[40]; /* 8*4 (hexdigits) + 7 (colons) + 1 ('\0') */
+           int rc;
+           struct in6_addr in6a;
+           memcpy(buf, name->string + 1, name->length - 2);
+           buf[name->length - 2] = '\0';
+           rc = inet_pton(AF_INET6, buf, &in6a);
+           if(rc == 1) {
+               char s[1 + sizeof(HostAddressRec)];
+               memset(s, 0, sizeof(s));
+               s[0] = DNS_A;
+               s[1] = 6;
+               memcpy(s + 2, &in6a, 16);
+               a = internAtomN(s, 1 + sizeof(HostAddressRec));
+               if(a == NULL)
+                   return NULL;
+           }
     }
     return a;
 }
@@ -1405,12 +1406,11 @@ labelsToString(char *buf, int offset, int n, char *d, int m, int *j_return)
     int i = offset;
     int j;
     int k = 0;
-    int ll, rc;
 
     j = 0;
     while(1) {
         if(i >= n) return -1;
-        ll = *(unsigned char*)&buf[i]; i++;
+        int ll = *(unsigned char*)&buf[i]; i++;
         if(ll == 0) {
             break;
         }
@@ -1420,7 +1420,7 @@ labelsToString(char *buf, int offset, int n, char *d, int m, int *j_return)
             if(i >= n) return -1;
             o = (ll & ~(3 << 6)) << 8 | *(unsigned char*)&buf[i];
             i++;
-            rc = labelsToString(buf, o, n, &d[j], m - j, &k);
+            int rc = labelsToString(buf, o, n, &d[j], m - j, &k);
             if(rc < 0)
                 return -1;
             j += k;
